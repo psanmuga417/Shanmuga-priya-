@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Spreadsheet Data Import Using Transform Maps: Project Document</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Serif:wght@500;600&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#F5F7FA; --surface:#FFFFFF; --ink:#18212D; --muted:#566275; --line:#D5DBE4;
+  --accent:#1F4FB8; --accent-soft:#E4ECFB; --ok:#1B7A57; --warn:#A8560B; --code:#EEF1F6;
+  box-sizing:border-box; padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]){
+    --bg:#0F151D; --surface:#17202B; --ink:#E6EBF2; --muted:#9AA7B8; --line:#2B3746;
+    --accent:#7FA6FF; --accent-soft:#1C2B47; --ok:#55C79A; --warn:#E8A15A; --code:#1D2733;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0F151D; --surface:#17202B; --ink:#E6EBF2; --muted:#9AA7B8; --line:#2B3746;
+  --accent:#7FA6FF; --accent-soft:#1C2B47; --ok:#55C79A; --warn:#E8A15A; --code:#1D2733;
+}
+html{scroll-padding-top:env(safe-area-inset-top,0px);}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:16px/1.6 "IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;}
+main{max-width:860px;margin:0 auto;padding:28px 18px 64px;}
+h1,h2,h3{font-family:"IBM Plex Serif",Georgia,serif;line-height:1.25;margin:0;}
+h1{font-size:clamp(1.7rem,5vw,2.4rem);margin-bottom:10px;}
+h2{font-size:1.4rem;margin:44px 0 14px;padding-bottom:8px;border-bottom:2px solid var(--accent);}
+h3{font-size:1.05rem;margin:18px 0 6px;}
+p{margin:0 0 12px;max-width:72ch;}
+.lede{color:var(--muted);font-size:1.05rem;}
+.meta{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:1px;background:var(--line);border:1px solid var(--line);border-radius:6px;overflow:hidden;margin-top:22px;}
+.meta div{background:var(--surface);padding:12px 14px;}
+.meta b{display:block;font-weight:500;color:var(--muted);font-size:.85rem;}
+.scroll{overflow-x:auto;border:1px solid var(--line);border-radius:6px;background:var(--surface);}
+table{border-collapse:collapse;width:100%;min-width:560px;font-size:.93rem;}
+th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);vertical-align:top;}
+th{background:var(--accent-soft);font-weight:600;}
+tr:last-child td{border-bottom:0;}
+.phase{background:var(--surface);border:1px solid var(--line);border-left:4px solid var(--accent);border-radius:6px;padding:16px 18px;margin:16px 0;}
+.phase h3{margin-top:0;font-size:1.15rem;}
+.phase .obj{color:var(--muted);margin-bottom:8px;}
+.phase ul{margin:4px 0 10px;padding-left:20px;}
+.phase li{margin:3px 0;}
+.phase .exit{border-top:1px solid var(--line);padding-top:10px;margin:10px 0 0;}
+.phase .exit b{color:var(--ok);}
+pre{background:var(--code);border:1px solid var(--line);border-radius:6px;padding:14px;overflow-x:auto;font:13px/1.5 ui-monospace,Menlo,Consolas,monospace;margin:8px 0 14px;}
+code{font:0.88em ui-monospace,Menlo,Consolas,monospace;background:var(--code);padding:1px 5px;border-radius:4px;}
+.check{list-style:none;padding:0;margin:0;}
+.check li{padding:8px 0 8px 30px;border-bottom:1px solid var(--line);position:relative;}
+.check li::before{content:"";position:absolute;left:2px;top:12px;width:15px;height:15px;border:2px solid var(--accent);border-radius:3px;}
+a{color:var(--accent);}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px;}
+@media print{body{background:#fff}.phase{break-inside:avoid}}
+</style>
+</head>
+<body>
+<main>
+<header>
+  <h1>Spreadsheet Data Import Using Transform Maps</h1>
+  <p class="lede">A phase-wise project document for loading data from Excel or CSV files into ServiceNow tables with import sets and transform maps.</p>
+  <div class="meta">
+    <div><b>Platform</b>ServiceNow</div>
+    <div><b>Method</b>Import set + transform map</div>
+    <div><b>Source</b>Excel (.xlsx) or CSV</div>
+    <div><b>Status</b>Draft for review</div>
+  </div>
+</header>
+
+<h2>1. Project overview</h2>
+<h3>Objective</h3>
+<p>Load spreadsheet data into a target table accurately, without duplicates, and with a repeatable process and a full audit trail.</p>
+<h3>Scope</h3>
+<p><b>In scope:</b> data preparation, import set loading, transform map design, scripts, testing, production load and documentation. <b>Out of scope:</b> ongoing integrations, scheduled imports, and changes to the target table's design.</p>
+<h3>Assumptions</h3>
+<ul>
+  <li>The target table already exists, or is created before Phase 4.</li>
+  <li>The spreadsheet owner confirms the data is correct before loading.</li>
+  <li>A sub-production instance is available for testing.</li>
+</ul>
+<h3>Roles</h3>
+<div class="scroll"><table>
+  <tr><th>Role</th><th>Responsibility</th></tr>
+  <tr><td>Project owner</td><td>Approves scope, phases and final sign-off</td></tr>
+  <tr><td>Data owner</td><td>Supplies and validates the spreadsheet</td></tr>
+  <tr><td>ServiceNow developer</td><td>Builds the import set, transform map and scripts</td></tr>
+  <tr><td>Tester / business user</td><td>Runs acceptance checks on loaded records</td></tr>
+</table></div>
+
+<h2>2. Phase plan</h2>
+<div class="scroll"><table>
+  <tr><th>Phase</th><th>Name</th><th>Main output</th></tr>
+  <tr><td>1</td><td>Requirements and data analysis</td><td>Requirements and field list</td></tr>
+  <tr><td>2</td><td>Spreadsheet preparation</td><td>Cleaned source file</td></tr>
+  <tr><td>3</td><td>Data source and import set</td><td>Loaded staging table</td></tr>
+  <tr><td>4</td><td>Transform map and field mapping</td><td>Working transform map</td></tr>
+  <tr><td>5</td><td>Scripts, coalesce and validation</td><td>Tested rules and scripts</td></tr>
+  <tr><td>6</td><td>Testing and error handling</td><td>Test report</td></tr>
+  <tr><td>7</td><td>Production load and sign-off</td><td>Loaded data and sign-off</td></tr>
+</table></div>
+
+<h2>3. Phase details</h2>
+
+<section class="phase">
+  <h3>Phase 1: Requirements and data analysis</h3>
+  <p class="obj">Understand what is being imported and where it goes.</p>
+  <ul>
+    <li>Identify the target table and its mandatory fields.</li>
+    <li>List every spreadsheet column and the target field it feeds.</li>
+    <li>Record the expected row count and any references (users, groups, locations).</li>
+    <li>Choose the key field used to match existing records (coalesce).</li>
+  </ul>
+  <p><b>Deliverables:</b> requirements note, column-to-field list.</p>
+  <p class="exit"><b>Exit criteria:</b> data owner and project owner agree on scope and fields.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 2: Spreadsheet preparation</h3>
+  <p class="obj">Make the file safe to load.</p>
+  <ul>
+    <li>Use a single header row with unique column names and no merged cells.</li>
+    <li>Remove blank rows and duplicates; trim spaces.</li>
+    <li>Standardise dates (for example <code>yyyy-MM-dd</code>) and choice values.</li>
+    <li>Use one sheet per table, and save as .xlsx or .csv.</li>
+  </ul>
+  <p><b>Deliverables:</b> cleaned source file with a version number.</p>
+  <p class="exit"><b>Exit criteria:</b> data owner confirms the file is final for testing.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 3: Data source and import set</h3>
+  <p class="obj">Load the spreadsheet into a staging (import set) table.</p>
+  <ul>
+    <li>Open <b>System Import Sets &gt; Load Data</b>.</li>
+    <li>Create a new import set table and upload the file.</li>
+    <li>Set the sheet number and header row, then load.</li>
+    <li>Confirm the staging rows match the spreadsheet row count.</li>
+  </ul>
+  <p><b>Deliverables:</b> import set table (<code>u_...</code>) with loaded rows.</p>
+  <p class="exit"><b>Exit criteria:</b> row count and column names match the source file.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 4: Transform map and field mapping</h3>
+  <p class="obj">Define how staging fields become target fields.</p>
+  <ul>
+    <li>Create the transform map (source: import set table, target: destination table).</li>
+    <li>Run <b>Auto Map Matching Fields</b>, then map the remaining fields by hand.</li>
+    <li>Tick <b>Coalesce</b> on the key field to update existing records instead of creating duplicates.</li>
+    <li>Map reference fields by a readable value, such as user name, and let the map resolve the record.</li>
+  </ul>
+  <p><b>Deliverables:</b> transform map and the mapping table below.</p>
+  <p class="exit"><b>Exit criteria:</b> every required target field has a mapping.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 5: Scripts, coalesce and validation</h3>
+  <p class="obj">Handle conversions and bad data before it reaches the target table.</p>
+  <ul>
+    <li>Use field map scripts for conversions and reference lookups.</li>
+    <li>Use <code>onBefore</code> to skip invalid rows, <code>onAfter</code> for follow-up actions.</li>
+    <li>Decide whether business rules should run during the import.</li>
+  </ul>
+  <p><b>Deliverables:</b> documented scripts (examples below).</p>
+  <p class="exit"><b>Exit criteria:</b> scripts reviewed and tested with valid and invalid rows.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 6: Testing and error handling</h3>
+  <p class="obj">Prove the import works before production.</p>
+  <ul>
+    <li>Run a small sample in sub-production, then the full file.</li>
+    <li>Check the import set rows: Inserted, Updated, Ignored, Skipped and Error.</li>
+    <li>Review the transform history and import log for failures.</li>
+    <li>Fix the source file or map, reload, and retest.</li>
+  </ul>
+  <p><b>Deliverables:</b> test report with counts and defects.</p>
+  <p class="exit"><b>Exit criteria:</b> no open errors, and business users accept the sample records.</p>
+</section>
+
+<section class="phase">
+  <h3>Phase 7: Production load and sign-off</h3>
+  <p class="obj">Load the final data and close the project.</p>
+  <ul>
+    <li>Take a backup or export of the existing target data.</li>
+    <li>Move the transform map to production (update set) and run the full import.</li>
+    <li>Verify record counts and spot-check records.</li>
+    <li>Archive the import set, file and logs; record lessons learned.</li>
+  </ul>
+  <p><b>Deliverables:</b> loaded production data, sign-off document.</p>
+  <p class="exit"><b>Exit criteria:</b> project owner signs off.</p>
+</section>
+
+<h2>4. Field mapping template</h2>
+<div class="scroll"><table>
+  <tr><th>Spreadsheet column</th><th>Import set field</th><th>Target field</th><th>Coalesce</th><th>Notes</th></tr>
+  <tr><td>Employee ID</td><td>u_employee_id</td><td>employee_number</td><td>Yes</td><td>Unique key</td></tr>
+  <tr><td>Full Name</td><td>u_full_name</td><td>name</td><td>No</td><td>Trim spaces</td></tr>
+  <tr><td>Manager</td><td>u_manager</td><td>manager</td><td>No</td><td>Reference lookup by user name</td></tr>
+  <tr><td>Start Date</td><td>u_start_date</td><td>start_date</td><td>No</td><td>Format yyyy-MM-dd</td></tr>
+</table></div>
+<p style="margin-top:10px;color:var(--muted)">The rows above are examples. Replace them with your own columns and fields.</p>
+
+<h2>5. Script examples</h2>
+<h3>Field map script: reference lookup</h3>
+<pre>answer = (function () {
+  var gr = new GlideRecord('sys_user');
+  gr.addQuery('user_name', source.u_manager);
+  gr.setLimit(1);
+  gr.query();
+  return gr.next() ? gr.getUniqueValue() : '';
+})();</pre>
+<h3>onBefore script: skip invalid rows</h3>
+<pre>(function runTransformScript(source, map, log, target) {
+  if (!source.u_employee_id) {
+    ignore = true;
+    log.warn('Row skipped: missing Employee ID');
+  }
+})(source, map, log, target);</pre>
+
+<h2>6. Risks and controls</h2>
+<div class="scroll"><table>
+  <tr><th>Risk</th><th>Control</th></tr>
+  <tr><td>Duplicate records created</td><td>Set coalesce on a unique key and test with a reload</td></tr>
+  <tr><td>Reference fields left empty</td><td>Validate lookups in Phase 6 and log unmatched values</td></tr>
+  <tr><td>Wrong date or choice values</td><td>Standardise in Phase 2 and convert in field map scripts</td></tr>
+  <tr><td>Bad data in production</td><td>Back up first and load only after sub-production sign-off</td></tr>
+</table></div>
+
+<h2>7. Final sign-off checklist</h2>
+<ul class="check">
+  <li>Scope and field list approved</li>
+  <li>Source file cleaned and versioned</li>
+  <li>Import set loaded and row count verified</li>
+  <li>Transform map and scripts reviewed</li>
+  <li>Sub-production test passed with no open errors</li>
+  <li>Production backup taken</li>
+  <li>Production record counts verified</li>
+  <li>Documentation archived and project owner sign-off received</li>
+</ul>
+</main>
+</body>
+</html>
